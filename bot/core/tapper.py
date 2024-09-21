@@ -439,7 +439,7 @@ class Tapper:
                 if settings.AUTO_PLAY_GAME:
                     await self.play_game(session)
 
-                sleep_ = randint(3600, 5000)
+                sleep_ = randint(2800, 3600)
                 logger.info(f"{self.session_name} | Sleep {sleep_}s...")
                 await asyncio.sleep(sleep_)
 
