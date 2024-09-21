@@ -23,7 +23,7 @@
 | **API_ID / API_HASH**      | Platform data from which to run the Telegram session (default - android)                                      |       
 | **REF_LINK**               | Put your ref link here (default: my ref link)                                                                 |
 | **AUTO_TASK**              | Auto do task (default: True)                                                                                  |
-| **AUTO_PLAY_GAME**         | AUTO PLAY GAME (default: FALSE) temporarily unavailable                                                       |
+| **AUTO_PLAY_GAME**         | AUTO PLAY GAME (default: True)                                                                                |
 | **USE_PROXY_FROM_FILE**    | Whether to use a proxy from the bot/config/proxies.txt file (True / False)                                    |
 
 
