@@ -208,18 +208,48 @@ class Tapper:
         else:
             logger.warning(f"{self.session_name} | <red>Get access token failed: {data_}</red>")
 
+    def setup_account(self, session: cloudscraper.CloudScraper):
+        ref_id = settings.REF_LINK.split("=")[1].split('&')[0].split('_')[1]
+        payload = {
+            "agentId": str(ref_id),
+            "resourceId": 2056
+        }
+        res = session.post("https://www.binance.com/bapi/growth/v1/friendly/growth-paas/mini-app-activity/third-party/referral", headers=headers,
+                           json=payload)
+        json_d = res.json()
+        if json_d['success']:
+            res = session.post("https://www.binance.com/bapi/growth/v1/friendly/growth-paas/mini-app-activity/third-party/game/participated",
+                               headers=headers, json=payload)
+            json_d = res.json()
+            if json_d['success']:
+                logger.success(f"{self.session_name} | <green>Successfully set up account !</green>")
+                login_task = {
+                    "resourceId": 2057
+                }
+                complete = self.complete_task(session, login_task)
+                if complete == "done":
+                    logger.success(f"{self.session_name} | <green>Successfully checkin for the first time !</green>")
 
-    def get_user_info(self, session: cloudscraper.CloudScraper):
+        else:
+            logger.warning(f"{self.session_name} | <yellow>Unknown error while tryng to init account: {json_d}</yellow>")
+    async def get_user_info(self, session: cloudscraper.CloudScraper):
         payload = {
             "resourceId": 2056
         }
         response = session.post("https://www.binance.com/bapi/growth/v1/friendly/growth-paas/mini-app-activity/third-party/user/user-info", headers=headers, json=payload)
         data_ = response.json()
+        # print(data_)
         if data_['code'] == '000000':
             # print(data_)
             data__ = data_['data']
-            logger.info(f"{self.session_name} | <cyan>Logged in</cyan>")
-            logger.info(f"{self.session_name} | Total point: <yellow>{data__['metaInfo']['totalGrade']}</yellow> | <white>Risk Passed: <red>{data__['riskPassed']}</red> | Qualified: <red>{data__['qualified']}</red></white>")
+            if data__['participated'] is False:
+                logger.info(f"{self.session_name} | Attempt to set up account...")
+                self.setup_account(session)
+                await asyncio.sleep(uniform(3,5))
+                await self.get_user_info(session)
+            else:
+                logger.info(f"{self.session_name} | <cyan>Logged in</cyan>")
+                logger.info(f"{self.session_name} | Total point: <yellow>{data__['metaInfo']['totalGrade']}</yellow> | <white>Risk Passed: <red>{data__['riskPassed']}</red> | Qualified: <red>{data__['qualified']}</red></white>")
 
         else:
             logger.warning(f"{self.session_name} | <red>Get user data failed: {data_}</red>")
@@ -374,16 +404,15 @@ class Tapper:
                     headers['Fvideo-Id'] = secrets.token_hex(20)
                     headers['Fvideo-Token'] = fvideo_token
                     headers['Bnc-Uuid'] = str(uuid.uuid4())
-                    headers['Cookie'] = "theme=dark; bnc-uuid=1c86a51a-6988-4197-b605-aad27320492b;"
+                    headers['Cookie'] = f"theme=dark; bnc-uuid={headers['Bnc-Uuid']};"
                     # print(fvideo_token)
+                    self.setup_session(session)
                     access_token_created_time = time()
                     token_live_time = randint(3500, 3600)
 
-
-                self.setup_session(session)
                 if self.access_token:
                     headers['X-Growth-Token'] = self.access_token
-                    self.get_user_info(session)
+                    await self.get_user_info(session)
                     if settings.AUTO_TASK:
                         task_list = self.get_task_list(session)
                         for task in task_list:
