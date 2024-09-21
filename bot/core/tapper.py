@@ -25,7 +25,6 @@ from .headers import headers
 from random import randint, choices, choice, uniform
 import secrets
 import uuid
-import os
 from faker import Faker
 import string
 
@@ -45,6 +44,8 @@ class Tapper:
         self.last_checkin = None
         self.balace = 0
         self.access_token = None
+        self.game_response = None
+        self.game = None
 
 
     async def get_tg_web_data(self, proxy: str | None) -> str:
@@ -97,6 +98,7 @@ class Tapper:
 
             if self.tg_client.is_connected:
                 await self.tg_client.disconnect()
+
 
             return tg_web_data
 
@@ -208,6 +210,22 @@ class Tapper:
         else:
             logger.warning(f"{self.session_name} | <red>Get access token failed: {data_}</red>")
 
+    def get_game_data(self, session: cloudscraper.CloudScraper):
+        try:
+            url = 'https://vemid42929.pythonanywhere.com/api/v1/moonbix/play'
+            response = session.post(url, json=self.game_response)
+
+            if response.json().get('message') == 'success':
+                self.game = response.json().get('game')
+                logger.info(f"{self.session_name} | <green> Get game data succesfully!</green>")
+                return True
+
+            logger.warning(f"{self.session_name} | <yellow>Failed to get game data, Msg: {response.json().get('message')}</yellow>")
+            return False
+        except Exception as error:
+            logger.error(f"{self.session_name} | <red>Unknown error while trying to get game data: {str(error)}</red>")
+            return False
+
     def setup_account(self, session: cloudscraper.CloudScraper):
         ref_id = settings.REF_LINK.split("=")[1].split('&')[0].split('_')[1]
         payload = {
@@ -306,39 +324,36 @@ class Tapper:
         else:
             return data_['messageDetail']
 
-    def generate_random_payload(self):
-        min_byte_length = int(min_length * 3 / 4)
-        max_byte_length = int(max_length * 3 / 4)
-        byte_length = choice(range(min_byte_length, max_byte_length + 1, 2))
-        random_bytes = os.urandom(byte_length)
-        random_string = base64.b64encode(random_bytes).decode('utf-8')
-        return random_string
 
-    def complete_game(self, session: cloudscraper.CloudScraper, reward):
-        string_payload = self.generate_random_payload()
+    def complete_game(self, session: cloudscraper.CloudScraper):
+        string_payload = self.game['payload']
         payload = {
-            "log": reward,
+            "log": self.game['log'],
             "payload": string_payload,
             "resourceId": 2056
         }
-        print(payload)
+        # print(payload)
         response = session.post("https://www.binance.com/bapi/growth/v1/friendly/growth-paas/mini-app-activity/third-party/game/complete",
                                 headers=headers, json=payload)
         data_ = response.json()
+
         if data_['success']:
-            logger.success(f"{self.session_name} | <green>Sucessfully earned: <yellow>{reward}</yellow> from game !</green>")
+            logger.success(f"{self.session_name} | <green>Sucessfully earned: <yellow>{self.game['log']}</yellow> from game !</green>")
         else:
             logger.warning(f"{self.session_name} | <yellow>Failed to complete game: {data_}</yellow>")
 
+    def auto_update_ticket(self, session: cloudscraper.CloudScraper):
+        ticket_data = self.get_user_info1(session)
+        return ticket_data['metaInfo']['totalAttempts'] - ticket_data['metaInfo']['consumedAttempts']
     async def play_game(self, session: cloudscraper.CloudScraper):
-
         ticket_data = self.get_user_info1(session)
         if ticket_data['metaInfo']['totalAttempts'] == ticket_data['metaInfo']['consumedAttempts']:
             logger.warning(f"{self.session_name} | No Attempt left to play game...")
             return
         attempt_left = ticket_data['metaInfo']['totalAttempts'] - ticket_data['metaInfo']['consumedAttempts']
+        logger.info(f"{self.session_name} | Starting to play game...")
         while attempt_left > 0:
-            logger.info(f"{self.session_name} | Starting to play game | attempts left: <cyan>{attempt_left}</cyan>")
+            logger.info(f"{self.session_name} | Attempts left: <cyan>{attempt_left}</cyan>")
             payload = {
                 "resourceId": 2056
             }
@@ -347,25 +362,23 @@ class Tapper:
             data_ = response.json()
             if data_['success']:
                 logger.success(f"{self.session_name} | <green>Game <cyan>{data_['data']['gameTag']}</cyan> started successful</green>")
-                game_setting = data_['data']['cryptoMinerConfig']['itemSettingList']
-                Maxium_reward = 0
-                for item in game_setting:
-                    if item['type'] == "REWARD" or item['type'] == "BONUS":
-                        for reward in item['rewardValueList']:
-                            Maxium_reward += reward
+                self.game_response = data_
+                check = self.get_game_data(session)
 
                 sleep_ = uniform(45, 45.1)
-                logger.info(f"{self.session_name} | Wait {sleep_}s to complete the game...")
+                logger.info(f"{self.session_name} | Wait <white>{sleep_}s</white> to complete the game...")
                 await asyncio.sleep(sleep_)
 
-                random_reward = randint(10, round(Maxium_reward/10))*10
-                self.complete_game(session, random_reward)
+                if check:
+                    self.complete_game(session)
+                    attempt_left = self.auto_update_ticket(session)
 
             else:
                 logger.warning(f"{self.session_name} | <yellow>Failed to start game, msg: {data_}</yellow>")
                 return
 
             sleep_ = uniform(5, 10)
+
             logger.info(f"{self.session_name} | Sleep {sleep_}s...")
 
             await asyncio.sleep(sleep_)
@@ -442,7 +455,7 @@ async def run_tapper(tg_client: Client, proxy: str | None):
     try:
         sleep_ = randint(1, 15)
         logger.info(f"{tg_client.name} | start after {sleep_}s")
-        # await asyncio.sleep(sleep_)
+        await asyncio.sleep(sleep_)
         await Tapper(tg_client=tg_client).run(proxy=proxy)
     except InvalidSession:
         logger.error(f"{tg_client.name} | Invalid Session")
