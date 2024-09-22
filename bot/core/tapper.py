@@ -362,13 +362,12 @@ class Tapper:
             data_ = response.json()
             if data_['success']:
                 logger.success(f"{self.session_name} | <green>Game <cyan>{data_['data']['gameTag']}</cyan> started successful</green>")
-                self.game_response = data_
-                check = self.get_game_data(session)
 
-                sleep_ = uniform(45, 45.1)
+                self.game_response = data_
+                sleep_ = uniform(45, 45.05)
                 logger.info(f"{self.session_name} | Wait <white>{sleep_}s</white> to complete the game...")
                 await asyncio.sleep(sleep_)
-
+                check = self.get_game_data(session)
                 if check:
                     self.complete_game(session)
                     attempt_left = self.auto_update_ticket(session)
@@ -439,7 +438,7 @@ class Tapper:
                 if settings.AUTO_PLAY_GAME:
                     await self.play_game(session)
 
-                sleep_ = randint(2800, 3600)
+                sleep_ = randint(2500, 3600)
                 logger.info(f"{self.session_name} | Sleep {sleep_}s...")
                 await asyncio.sleep(sleep_)
 
