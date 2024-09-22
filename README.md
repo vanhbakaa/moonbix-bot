@@ -2,7 +2,8 @@
 
 # Join the bot [here](https://t.me/Binance_Moonbix_bot/start?startApp=ref_6624523270&startapp=ref_6624523270&utm_medium=web_share_copy)
 
-# IMPORTANT NOTICE: I am not responsible for your account. Please consider the potential risks before using this bot.
+> [!WARNING]
+> I am not responsible for your account. Please consider the potential risks before using this bot.
 
 # 🔥🔥 Use PYTHON 3.10 - 3.11.5 🔥🔥
 
