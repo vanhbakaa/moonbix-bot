@@ -313,47 +313,49 @@ class Tapper:
                     else:
                         obj_type['trap'].update({abs(int(reward)): f"{obj['size']},{obj['quantity']}"})
 
+
             limit = min(total_obj, random_pick_time)
             random_pick_sth_times = randint(1, limit)
             picked_bonus = False
             picked = 0
             logger.info(f"{self.session_name} | Playing game!")
             game_data_payload = []
-            self.curr_time = int((time() * 1000))
             score = 0
             while end_time > self.curr_time and picked < random_pick_sth_times:
                 self.rs = randint(1500, 2500)
                 random_reward = randint(1, 100)
-                if random_reward <= 30:
-                    picked += 1
-                    reward_d = choice(list(obj_type['trap'].keys()))
-                    quantity = obj_type['trap'][reward_d].split(',')[1]
-                    item_size = obj_type['trap'][reward_d].split(',')[0]
-                    if int(quantity) > 0:
-                        score = max(0, score - int(reward_d))
-                        game_data_payload.append(self.random_data_type(end_time=end_time,
-                                                                       type=0,
-                                                                       item_size=item_size,
-                                                                       item_pts=0))
-                        if int(quantity) - 1 > 0:
-                            obj_type['trap'].update({reward_d: f"{item_size},{int(quantity) - 1}"})
-                        else:
-                            obj_type["trap"].pop(reward_d)
-                elif random_reward > 30 and random_reward <= 60:
-                    picked += 1
-                    reward_d = choice(list(obj_type['coin'].keys()))
-                    quantity = obj_type['coin'][reward_d].split(',')[1]
-                    item_size = obj_type['coin'][reward_d].split(',')[0]
-                    if int(quantity) > 0:
-                        score += int(reward_d)
-                        game_data_payload.append(self.random_data_type(end_time=end_time,
-                                                                       type=1,
-                                                                       item_size=item_size,
-                                                                       item_pts=0))
-                        if int(quantity) - 1 > 0:
-                            obj_type['coin'].update({reward_d: f"{item_size},{int(quantity) - 1}"})
-                        else:
-                            obj_type["coin"].pop(reward_d)
+                if random_reward <= 20:
+                    if len(list(obj_type['trap'].keys())) > 0:
+                        picked += 1
+                        reward_d = choice(list(obj_type['trap'].keys()))
+                        quantity = obj_type['trap'][reward_d].split(',')[1]
+                        item_size = obj_type['trap'][reward_d].split(',')[0]
+                        if int(quantity) > 0:
+                            score = max(0, score - int(reward_d))
+                            game_data_payload.append(self.random_data_type(end_time=end_time,
+                                                                           type=0,
+                                                                           item_size=item_size,
+                                                                           item_pts=0))
+                            if int(quantity) - 1 > 0:
+                                obj_type['trap'].update({reward_d: f"{item_size},{int(quantity) - 1}"})
+                            else:
+                                obj_type["trap"].pop(reward_d)
+                elif random_reward > 20 and random_reward <= 60:
+                    if len(list(obj_type['coin'].keys())) > 0:
+                        picked += 1
+                        reward_d = choice(list(obj_type['coin'].keys()))
+                        quantity = obj_type['coin'][reward_d].split(',')[1]
+                        item_size = obj_type['coin'][reward_d].split(',')[0]
+                        if int(quantity) > 0:
+                            score += int(reward_d)
+                            game_data_payload.append(self.random_data_type(end_time=end_time,
+                                                                           type=1,
+                                                                           item_size=item_size,
+                                                                           item_pts=0))
+                            if int(quantity) - 1 > 0:
+                                obj_type['coin'].update({reward_d: f"{item_size},{int(quantity) - 1}"})
+                            else:
+                                obj_type["coin"].pop(reward_d)
                 elif random_reward > 60 and random_reward <= 80 and picked_bonus is False:
                     picked += 1
                     picked_bonus = True
@@ -535,18 +537,24 @@ class Tapper:
                 "https://www.binance.com/bapi/growth/v1/friendly/growth-paas/mini-app-activity/third-party/game/start",
                 headers=headers, json=payload)
             data_ = response.json()
+            attempt_left = self.auto_update_ticket(session)
             if data_['success']:
                 logger.success(
                     f"{self.session_name} | <green>Game <cyan>{data_['data']['gameTag']}</cyan> started successful</green>")
 
                 self.game_response = data_
                 sleep_ = uniform(45, 45.05)
-                logger.info(f"{self.session_name} | Wait <white>{sleep_}s</white> to complete the game...")
-                await asyncio.sleep(sleep_)
+                self.curr_time = int((time() * 1000))
                 check = self.get_game_data()
                 if check:
+                    logger.info(f"{self.session_name} | Wait <white>{sleep_}s</white> to complete the game...")
+                    await asyncio.sleep(sleep_)
+
                     self.complete_game(session)
-                    attempt_left = self.auto_update_ticket(session)
+
+                sleep_ = uniform(5, 10)
+
+                logger.info(f"{self.session_name} | Sleep {sleep_}s...")
 
             else:
                 logger.warning(f"{self.session_name} | <yellow>Failed to start game, msg: {data_}</yellow>")
