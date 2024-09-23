@@ -316,7 +316,7 @@ class Tapper:
         try:
             end_time = int((time() + 45) * 1000)
             # print(end_time)
-            random_pick_time = randint(5, 15)
+            random_pick_time = randint(3, 5)
             total_obj = 0
             key_for_game = self.game_response['data']['gameTag']
             obj_type = {
@@ -345,7 +345,7 @@ class Tapper:
             while end_time > self.curr_time and picked < random_pick_sth_times:
                 self.rs = randint(2500, 4000)
                 random_reward = randint(1, 100)
-                if random_reward <= 20:
+                if random_reward <= 10:
                     if len(list(obj_type['trap'].keys())) > 0:
                         picked += 1
                         reward_d = choice(list(obj_type['trap'].keys()))
@@ -366,7 +366,7 @@ class Tapper:
                                     obj_type["trap"].pop(reward_d)
                             else:
                                 break
-                elif random_reward > 20 and random_reward <= 60:
+                elif random_reward > 10 and random_reward <= 70:
                     if len(list(obj_type['coin'].keys())) > 0:
                         picked += 1
                         reward_d = choice(list(obj_type['coin'].keys()))
@@ -387,7 +387,7 @@ class Tapper:
                                     obj_type["coin"].pop(reward_d)
                             else:
                                 break
-                elif random_reward > 60 and random_reward <= 80 and picked_bonus is False:
+                elif random_reward > 70 and random_reward <= 90 and picked_bonus is False:
                     size = obj_type['bonus'].split(',')[1]
                     pts = obj_type['bonus'].split(',')[0]
                     data_ = self.random_data_type(end_time=end_time,
