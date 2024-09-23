@@ -22,6 +22,7 @@ from soupsieve.util import lower
 from bot.core.agents import generate_random_user_agent
 from bot.config import settings
 import cloudscraper
+from math import sqrt
 
 from bot.utils import logger
 from bot.exceptions import InvalidSession
@@ -221,17 +222,23 @@ class Tapper:
     def random_data_type(self, type, end_time, item_size, item_pts):
         # I WOKED HARD TO FIND OUT THIS.SO IF U COPY PLEASE CREDIT ME !
 
-        end_time = int(end_time)
+        # end_time = int(end_time)
         if type == 1:
             pick_time = self.curr_time + self.rs
             if pick_time >= end_time:
                 pick_time = end_time - 1000
+                return None
 
-            hook_pos_x = round(uniform(75, 275), 3)
-            hook_pos_y = round(uniform(199, 251), 3)
-            hook_shot_angle = round(uniform(-1, 1), 3)
-            hook_hit_x = round(uniform(100, 400), 3)
-            hook_hit_y = round(uniform(250, 700), 3)
+            hook_pos_x = "{:.3f}".format(round(uniform(75, 275), 3))
+            hook_pos_y = "{:.3f}".format(round(uniform(199, 251), 3))
+            hook_hit_x = "{:.3f}".format(round(uniform(100, 400), 3))
+            hook_hit_y = "{:.3f}".format(round(uniform(250, 550), 3))
+
+            multi = (float(hook_hit_x) - float(hook_pos_x))*(float(hook_hit_x) - float(hook_pos_x))
+            mult2i = (float(hook_hit_y) - float(hook_pos_y)) * (float(hook_hit_y) - float(hook_pos_y))
+            cal_angle = (float(hook_pos_x) - float(hook_hit_x))/(sqrt(multi + mult2i))
+            hook_shot_angle = "{:.3f}".format(cal_angle)
+
             item_type = 1
             item_s = item_size
             point = randint(1, 200)
@@ -240,26 +247,39 @@ class Tapper:
             pick_time = self.curr_time+ self.rs
             if pick_time >= end_time:
                 pick_time = end_time - 1000
+                return None
 
-            hook_pos_x = round(uniform(75, 275), 3)
-            hook_pos_y = round(uniform(199, 251), 3)
-            hook_shot_angle = round(uniform(-1, 1), 3)
-            hook_hit_x = round(uniform(100, 400), 3)
-            hook_hit_y = round(uniform(250, 700), 3)
+            hook_pos_x = "{:.3f}".format(round(uniform(75, 275), 3))
+            hook_pos_y = "{:.3f}".format(round(uniform(199, 251), 3))
+           #  hook_shot_angle = "{:.3f}".format(round(uniform(-1, 1), 3))
+            hook_hit_x = "{:.3f}".format(round(uniform(100, 400), 3))
+            hook_hit_y = "{:.3f}".format(round(uniform(250, 550), 3))
+            multi = (float(hook_hit_x) - float(hook_pos_x)) * (float(hook_hit_x) - float(hook_pos_x))
+            mult2i = (float(hook_hit_y) - float(hook_pos_y)) * (float(hook_hit_y) - float(hook_pos_y))
+            cal_angle = (float(hook_pos_x) - float(hook_hit_x)) / (sqrt(multi + mult2i))
+            hook_shot_angle = "{:.3f}".format(cal_angle)
             item_type = 2
             item_s = item_size
-            point = item_size + item_pts
+            point = int(item_size) + int(item_pts)
 
         elif type == 0:
             pick_time = self.curr_time + self.rs
             if pick_time >= end_time:
                 pick_time = end_time - 1000
+                return None
 
-            hook_pos_x = round(uniform(75, 275), 3)
-            hook_pos_y = round(uniform(199, 251), 3)
-            hook_shot_angle = round(uniform(-1, 1), 3)
-            hook_hit_x = round(uniform(100, 400), 3)
-            hook_hit_y = round(uniform(250, 700), 3)
+            hook_pos_x = "{:.3f}".format(round(uniform(75, 275), 3))
+            hook_pos_y = "{:.3f}".format(round(uniform(199, 251), 3))
+            # hook_shot_angle = "{:.3f}".format(round(uniform(-1, 1), 3))
+            hook_hit_x = "{:.3f}".format(round(uniform(100, 400), 3))
+            hook_hit_y = "{:.3f}".format(round(uniform(250, 550), 3))
+            multi = (float(hook_hit_x) - float(hook_pos_x)) * (float(hook_hit_x) - float(hook_pos_x))
+            mult2i = (float(hook_hit_y) - float(hook_pos_y)) * (float(hook_hit_y) - float(hook_pos_y))
+
+            cal_angle = (float(hook_pos_x) - float(hook_hit_x)) / (sqrt(multi + mult2i))
+
+            hook_shot_angle = "{:.3f}".format(cal_angle)
+
             item_type = 0
             item_s = item_size
             point = randint(1, 200)
@@ -267,10 +287,11 @@ class Tapper:
             pick_time = self.curr_time + self.rs
             if pick_time >= end_time:
                 pick_time = end_time - 1000
+                return None
 
-            hook_pos_x = round(uniform(75, 275), 3)
-            hook_pos_y = round(uniform(199, 251), 3)
-            hook_shot_angle = round(uniform(-1, 1), 3)
+            hook_pos_x = "{:.3f}".format(round(uniform(75, 275), 3))
+            hook_pos_y = "{:.3f}".format(round(uniform(199, 251), 3))
+            hook_shot_angle = "{:.3f}".format(round(uniform(-1, 1), 3))
             hook_hit_x = 0
             hook_hit_y = 0
             item_type = randint(0, 2)
@@ -293,9 +314,9 @@ class Tapper:
     def get_game_data(self):
         # I WOKED HARD TO FIND OUT THIS.SO IF U COPY PLEASE CREDIT ME !
         try:
-            timer = 45
             end_time = int((time() + 45) * 1000)
-            random_pick_time = randint(5, 20)
+            # print(end_time)
+            random_pick_time = randint(5, 15)
             total_obj = 0
             key_for_game = self.game_response['data']['gameTag']
             obj_type = {
@@ -322,7 +343,7 @@ class Tapper:
             game_data_payload = []
             score = 0
             while end_time > self.curr_time and picked < random_pick_sth_times:
-                self.rs = randint(1500, 2500)
+                self.rs = randint(2500, 4000)
                 random_reward = randint(1, 100)
                 if random_reward <= 20:
                     if len(list(obj_type['trap'].keys())) > 0:
@@ -331,15 +352,20 @@ class Tapper:
                         quantity = obj_type['trap'][reward_d].split(',')[1]
                         item_size = obj_type['trap'][reward_d].split(',')[0]
                         if int(quantity) > 0:
-                            score = max(0, score - int(reward_d))
-                            game_data_payload.append(self.random_data_type(end_time=end_time,
+                            data_ = self.random_data_type(end_time=end_time,
                                                                            type=0,
                                                                            item_size=item_size,
-                                                                           item_pts=0))
-                            if int(quantity) - 1 > 0:
-                                obj_type['trap'].update({reward_d: f"{item_size},{int(quantity) - 1}"})
+                                                                           item_pts=0)
+                            if data_ is not None:
+                                score = max(0, score - int(reward_d))
+                                game_data_payload.append(data_)
+                                if int(quantity) - 1 > 0:
+                                    obj_type['trap'].update({reward_d: f"{item_size},{int(quantity) - 1}"})
+
+                                else:
+                                    obj_type["trap"].pop(reward_d)
                             else:
-                                obj_type["trap"].pop(reward_d)
+                                break
                 elif random_reward > 20 and random_reward <= 60:
                     if len(list(obj_type['coin'].keys())) > 0:
                         picked += 1
@@ -347,25 +373,32 @@ class Tapper:
                         quantity = obj_type['coin'][reward_d].split(',')[1]
                         item_size = obj_type['coin'][reward_d].split(',')[0]
                         if int(quantity) > 0:
-                            score += int(reward_d)
-                            game_data_payload.append(self.random_data_type(end_time=end_time,
+
+                            data_ = self.random_data_type(end_time=end_time,
                                                                            type=1,
                                                                            item_size=item_size,
-                                                                           item_pts=0))
-                            if int(quantity) - 1 > 0:
-                                obj_type['coin'].update({reward_d: f"{item_size},{int(quantity) - 1}"})
+                                                                           item_pts=0)
+                            if data_ is not None:
+                                score += int(reward_d)
+                                game_data_payload.append(data_)
+                                if int(quantity) - 1 > 0:
+                                    obj_type['coin'].update({reward_d: f"{item_size},{int(quantity) - 1}"})
+                                else:
+                                    obj_type["coin"].pop(reward_d)
                             else:
-                                obj_type["coin"].pop(reward_d)
+                                break
                 elif random_reward > 60 and random_reward <= 80 and picked_bonus is False:
-                    picked += 1
-                    picked_bonus = True
                     size = obj_type['bonus'].split(',')[1]
                     pts = obj_type['bonus'].split(',')[0]
-                    score += int(pts)
-                    game_data_payload.append(self.random_data_type(end_time=end_time,
-                                                                   type=2,
-                                                                   item_size=int(size),
-                                                                   item_pts=int(pts)))
+                    data_ = self.random_data_type(end_time=end_time,
+                                          type=2,
+                                          item_size=size,
+                                          item_pts=pts)
+                    if data_ is not None:
+                        picked += 1
+                        picked_bonus = True
+                        score += int(pts)
+                        game_data_payload.append(data_)
                 else:
                     game_data_payload.append(self.random_data_type(end_time=end_time,
                                                                    type=-1,
