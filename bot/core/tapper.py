@@ -552,10 +552,6 @@ class Tapper:
 
                     self.complete_game(session)
 
-                sleep_ = uniform(5, 10)
-
-                logger.info(f"{self.session_name} | Sleep {sleep_}s...")
-
             else:
                 logger.warning(f"{self.session_name} | <yellow>Failed to start game, msg: {data_}</yellow>")
                 return
