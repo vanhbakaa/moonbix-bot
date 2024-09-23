@@ -378,7 +378,8 @@ class Tapper:
             game_payload = self.encrypt(data_pl, key_for_game)
             self.game = {
                 "payload": game_payload,
-                "log": score
+                "log": score,
+                "debug": data_pl
             }
             # print(self.game)
             return True
@@ -515,7 +516,7 @@ class Tapper:
             logger.success(
                 f"{self.session_name} | <green>Sucessfully earned: <yellow>{self.game['log']}</yellow> from game !</green>")
         else:
-            logger.warning(f"{self.session_name} | <yellow>Failed to complete game: {data_}</yellow>")
+            logger.warning(f"{self.session_name} | <yellow>Failed to complete game: {self.game['debug']} Send this to me so i can fix it !</yellow>")
 
     def auto_update_ticket(self, session: cloudscraper.CloudScraper):
         ticket_data = self.get_user_info1(session)
