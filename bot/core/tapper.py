@@ -514,7 +514,7 @@ class Tapper:
 
         if data_['success']:
             logger.success(
-                f"{self.session_name} | <green>Sucessfully earned: <yellow>{self.game['log']}</yellow> from game !</green>")
+                f"{self.session_name} | <green>Sucessfully earned: <yellow>{self.game['log']}</yellow> from game !\nDebug: {self.game['debug']}</green>")
         else:
             logger.warning(f"{self.session_name} | <yellow>Failed to complete game: {self.game['debug']} Send this to me so i can fix it !</yellow>")
 
