@@ -4,7 +4,7 @@
 
 > [!WARNING]
 > I am not responsible for your account. Please consider the potential risks before using this bot. <br>
-> IF YOU ARE RUNNING MORE THAN 1 ACCOUNT PLEASE ADD PROXY FOR EACH ACCOUNT!
+> IF YOU ARE RUNNING MORE THAN 1 ACCOUNT PLEASE ADD PROXY FOR EACH ACCOUNT OR RUN WITHOUT MULTI-THREAD
 
 # 🔥🔥 Use PYTHON 3.10 - 3.11.5 🔥🔥
 
