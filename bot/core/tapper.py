@@ -219,7 +219,7 @@ class Tapper:
         else:
             logger.warning(f"{self.session_name} | <red>Get access token failed: {data_}</red>")
 
-    def random_data_type(self, type, end_time, item_size, item_pts):
+    def random_data_type(self, type, end_time, item_size, item_pts, pos_y: float):
         # I WOKED HARD TO FIND OUT THIS.SO IF U COPY PLEASE CREDIT ME !
 
         # end_time = int(end_time)
@@ -229,10 +229,10 @@ class Tapper:
                 pick_time = end_time - 1000
                 return None
 
-            hook_pos_x = "{:.3f}".format(round(uniform(75, 275), 3))
-            hook_pos_y = "{:.3f}".format(round(uniform(199, 251), 3))
+            hook_pos_x = "{:.3f}".format(round(uniform(75, 230), 3))
+            hook_pos_y = "{:.3f}".format(round(uniform(199, 230), 3))
             hook_hit_x = "{:.3f}".format(round(uniform(100, 400), 3))
-            hook_hit_y = "{:.3f}".format(round(uniform(250, 550), 3))
+            hook_hit_y = "{:.3f}".format(pos_y)
 
             multi = (float(hook_hit_x) - float(hook_pos_x))*(float(hook_hit_x) - float(hook_pos_x))
             mult2i = (float(hook_hit_y) - float(hook_pos_y)) * (float(hook_hit_y) - float(hook_pos_y))
@@ -249,11 +249,11 @@ class Tapper:
                 pick_time = end_time - 1000
                 return None
 
-            hook_pos_x = "{:.3f}".format(round(uniform(75, 275), 3))
-            hook_pos_y = "{:.3f}".format(round(uniform(199, 251), 3))
+            hook_pos_x = "{:.3f}".format(round(uniform(75, 230), 3))
+            hook_pos_y = "{:.3f}".format(round(uniform(199, 230), 3))
            #  hook_shot_angle = "{:.3f}".format(round(uniform(-1, 1), 3))
             hook_hit_x = "{:.3f}".format(round(uniform(100, 400), 3))
-            hook_hit_y = "{:.3f}".format(round(uniform(250, 550), 3))
+            hook_hit_y = "{:.3f}".format(pos_y)
             multi = (float(hook_hit_x) - float(hook_pos_x)) * (float(hook_hit_x) - float(hook_pos_x))
             mult2i = (float(hook_hit_y) - float(hook_pos_y)) * (float(hook_hit_y) - float(hook_pos_y))
             cal_angle = (float(hook_pos_x) - float(hook_hit_x)) / (sqrt(multi + mult2i))
@@ -268,11 +268,11 @@ class Tapper:
                 pick_time = end_time - 1000
                 return None
 
-            hook_pos_x = "{:.3f}".format(round(uniform(75, 275), 3))
-            hook_pos_y = "{:.3f}".format(round(uniform(199, 251), 3))
+            hook_pos_x = "{:.3f}".format(round(uniform(75, 230), 3))
+            hook_pos_y = "{:.3f}".format(round(uniform(199, 230), 3))
             # hook_shot_angle = "{:.3f}".format(round(uniform(-1, 1), 3))
             hook_hit_x = "{:.3f}".format(round(uniform(100, 400), 3))
-            hook_hit_y = "{:.3f}".format(round(uniform(250, 550), 3))
+            hook_hit_y = "{:.3f}".format(pos_y)
             multi = (float(hook_hit_x) - float(hook_pos_x)) * (float(hook_hit_x) - float(hook_pos_x))
             mult2i = (float(hook_hit_y) - float(hook_pos_y)) * (float(hook_hit_y) - float(hook_pos_y))
 
@@ -289,8 +289,8 @@ class Tapper:
                 pick_time = end_time - 1000
                 return None
 
-            hook_pos_x = "{:.3f}".format(round(uniform(75, 275), 3))
-            hook_pos_y = "{:.3f}".format(round(uniform(199, 251), 3))
+            hook_pos_x = "{:.3f}".format(round(uniform(75, 230), 3))
+            hook_pos_y = "{:.3f}".format(round(uniform(199, 230), 3))
             hook_shot_angle = "{:.3f}".format(round(uniform(-1, 1), 3))
             hook_hit_x = 0
             hook_hit_y = 0
@@ -316,7 +316,7 @@ class Tapper:
         try:
             end_time = int((time() + 45) * 1000)
             # print(end_time)
-            random_pick_time = randint(3, 5)
+            random_pick_time = randint(3, 15)
             total_obj = 0
             key_for_game = self.game_response['data']['gameTag']
             obj_type = {
@@ -328,11 +328,12 @@ class Tapper:
                 total_obj += obj['quantity']
                 if obj['type'] == "BONUS":
                     obj_type['bonus'] = f"{obj['rewardValueList'][0]},{obj['size']}"
-                for reward in obj['rewardValueList']:
-                    if int(reward) > 0:
-                        obj_type['coin'].update({reward: f"{obj['size']},{obj['quantity']}"})
-                    else:
-                        obj_type['trap'].update({abs(int(reward)): f"{obj['size']},{obj['quantity']}"})
+                else:
+                    for reward in obj['rewardValueList']:
+                        if int(reward) > 0:
+                            obj_type['coin'].update({reward: f"{obj['size']},{obj['quantity']}"})
+                        else:
+                            obj_type['trap'].update({abs(int(reward)): f"{obj['size']},{obj['quantity']}"})
 
 
             limit = min(total_obj, random_pick_time)
@@ -342,10 +343,23 @@ class Tapper:
             logger.info(f"{self.session_name} | Playing game!")
             game_data_payload = []
             score = 0
+            # print(obj_type)
+
+            pos_y = []
+            for i in range(random_pick_sth_times + 5):
+                pos_y.append(uniform(250, 550))
+
+            sorted_pos_y = sorted(pos_y)
+            for i in range(1, len(sorted_pos_y)):
+                if sorted_pos_y[i] - sorted_pos_y[i-1] < 40:
+                    sorted_pos_y[i] += randint(40, 55)
+
+            Total_tap = 0
+
             while end_time > self.curr_time and picked < random_pick_sth_times:
                 self.rs = randint(2500, 4000)
                 random_reward = randint(1, 100)
-                if random_reward <= 10:
+                if random_reward <= 20:
                     if len(list(obj_type['trap'].keys())) > 0:
                         picked += 1
                         reward_d = choice(list(obj_type['trap'].keys()))
@@ -353,10 +367,12 @@ class Tapper:
                         item_size = obj_type['trap'][reward_d].split(',')[0]
                         if int(quantity) > 0:
                             data_ = self.random_data_type(end_time=end_time,
-                                                                           type=0,
-                                                                           item_size=item_size,
-                                                                           item_pts=0)
+                                                                        type=0,
+                                                                        item_size=int(item_size),
+                                                                        item_pts=0,
+                                                                        pos_y=sorted_pos_y[Total_tap])
                             if data_ is not None:
+                                Total_tap += 1
                                 score = max(0, score - int(reward_d))
                                 game_data_payload.append(data_)
                                 if int(quantity) - 1 > 0:
@@ -366,7 +382,7 @@ class Tapper:
                                     obj_type["trap"].pop(reward_d)
                             else:
                                 break
-                elif random_reward > 10 and random_reward <= 70:
+                elif random_reward > 20 and random_reward <= 70:
                     if len(list(obj_type['coin'].keys())) > 0:
                         picked += 1
                         reward_d = choice(list(obj_type['coin'].keys()))
@@ -377,8 +393,10 @@ class Tapper:
                             data_ = self.random_data_type(end_time=end_time,
                                                                            type=1,
                                                                            item_size=item_size,
-                                                                           item_pts=0)
+                                                                           item_pts=0,
+                                                                           pos_y=sorted_pos_y[Total_tap])
                             if data_ is not None:
+                                Total_tap += 1
                                 score += int(reward_d)
                                 game_data_payload.append(data_)
                                 if int(quantity) - 1 > 0:
@@ -388,22 +406,28 @@ class Tapper:
                             else:
                                 break
                 elif random_reward > 70 and random_reward <= 90 and picked_bonus is False:
+                    picked += 1
                     size = obj_type['bonus'].split(',')[1]
                     pts = obj_type['bonus'].split(',')[0]
                     data_ = self.random_data_type(end_time=end_time,
                                           type=2,
                                           item_size=size,
-                                          item_pts=pts)
+                                          item_pts=pts,
+                                          pos_y=sorted_pos_y[Total_tap])
                     if data_ is not None:
-                        picked += 1
+                        Total_tap += 1
                         picked_bonus = True
                         score += int(pts)
                         game_data_payload.append(data_)
                 else:
-                    game_data_payload.append(self.random_data_type(end_time=end_time,
-                                                                   type=-1,
-                                                                   item_size=0,
-                                                                   item_pts=0))
+                    data_ = self.random_data_type(end_time=end_time,
+                                                  type=-1,
+                                                  item_size=0,
+                                                  item_pts=0,
+                                                  pos_y=sorted_pos_y[Total_tap])
+                    game_data_payload.append(data_)
+                    Total_tap += 1
+
                 self.curr_time += self.rs
 
             data_pl = ';'.join(game_data_payload)
@@ -416,7 +440,6 @@ class Tapper:
             }
             # print(self.game)
             return True
-
         except Exception as error:
             traceback.print_exc()
             logger.error(f"{self.session_name} | <red>Unknown error while trying to get game data: {str(error)}</red>")
@@ -547,9 +570,9 @@ class Tapper:
 
         if data_['success']:
             logger.success(
-                f"{self.session_name} | <green>Sucessfully earned: <yellow>{self.game['log']}</yellow> from game !\nDebug: {self.game['debug']}</green>")
+                f"{self.session_name} | <green>Sucessfully earned: <yellow>{self.game['log']}</yellow> from game !</green>")
         else:
-            logger.warning(f"{self.session_name} | <yellow>Failed to complete game: {self.game['debug']} Send this to me so i can fix it !</yellow>")
+            logger.warning(f"{self.session_name} | <yellow>Failed to complete game | {self.game['log']}: {self.game['debug']} Send this to me so i can fix it !</yellow>")
 
     def auto_update_ticket(self, session: cloudscraper.CloudScraper):
         ticket_data = self.get_user_info1(session)
@@ -575,8 +598,8 @@ class Tapper:
             if data_['success']:
                 logger.success(
                     f"{self.session_name} | <green>Game <cyan>{data_['data']['gameTag']}</cyan> started successful</green>")
-
                 self.game_response = data_
+                # print(data_)
                 sleep_ = uniform(45, 45.05)
                 self.curr_time = int((time() * 1000))
                 check = self.get_game_data()
