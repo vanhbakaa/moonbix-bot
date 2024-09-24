@@ -405,7 +405,7 @@ class Tapper:
                                     obj_type["coin"].pop(reward_d)
                             else:
                                 break
-                elif random_reward > 70 and random_reward <= 90 and picked_bonus is False:
+                elif random_reward > 70 and random_reward <= 100 and picked_bonus is False:
                     picked += 1
                     size = obj_type['bonus'].split(',')[1]
                     pts = obj_type['bonus'].split(',')[0]
@@ -419,27 +419,24 @@ class Tapper:
                         picked_bonus = True
                         score += int(pts)
                         game_data_payload.append(data_)
-                else:
-                    data_ = self.random_data_type(end_time=end_time,
-                                                  type=-1,
-                                                  item_size=0,
-                                                  item_pts=0,
-                                                  pos_y=sorted_pos_y[Total_tap])
-                    game_data_payload.append(data_)
-                    Total_tap += 1
 
                 self.curr_time += self.rs
 
-            data_pl = ';'.join(game_data_payload)
-            # print(data_pl)
-            game_payload = self.encrypt(data_pl, key_for_game)
-            self.game = {
-                "payload": game_payload,
-                "log": score,
-                "debug": data_pl
-            }
-            # print(self.game)
-            return True
+            if len(game_data_payload) > 0:
+
+                data_pl = ';'.join(game_data_payload)
+                # print(data_pl)
+                game_payload = self.encrypt(data_pl, key_for_game)
+                self.game = {
+                    "payload": game_payload,
+                    "log": score,
+                    "debug": data_pl
+                }
+                # print(self.game)
+                return True
+            else:
+                logger.warning(f"{self.session_name} | <yellow>Failed to play game, reason: Time out</yellow>")
+                return False
         except Exception as error:
             traceback.print_exc()
             logger.error(f"{self.session_name} | <red>Unknown error while trying to get game data: {str(error)}</red>")
