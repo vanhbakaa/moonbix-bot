@@ -17,8 +17,7 @@
 | Auto checkin                                                  |        ✅        |
 | Auto play game                                                |        ✅        |
 | Support for pyrogram .session                                 |        ✅        |
-
-
+Auto get maxium points each game        |        ✅        |
 ## [Settings](https://github.com/vanhbakaa/moonbix-bot/blob/main/.env-example)
 | Settings | Description |
 |----------------------------|:-------------------------------------------------------------------------------------------------------------:|
