@@ -99,6 +99,16 @@ You can also use arguments for quick start, for example:
 # 1 - Run clicker
 # 2 - Creates a session
 ```
+# Support This Project
+
+If you'd like to support the development of this project, please consider making a donation. Every little bit helps!
+
+👉 **[Click here to view donation options](https://github.com/vanhbakaa/Donation/blob/main/README.md)** 👈
+
+Your support allows us to keep improving the project and bring more features!
+
+Thank you for your generosity! 🙌
+
 ### Contacts
 
 For support or questions, you can contact me [![Static Badge](https://img.shields.io/badge/Telegram-Channel-Link?style=for-the-badge&logo=Telegram&logoColor=white&logoSize=auto&color=blue)](https://t.me/airdrop_tool_vanh)
