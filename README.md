@@ -89,6 +89,15 @@ copy .env-example .env
 # Here you must specify your API_ID and API_HASH, the rest is taken by default
 python main.py
 ```
+You can also use arguments for quick start, for example:
+```shell
+~/moonbix-bot >>> python main.py --action (1/2)
+# Or
+~/moonbix-bot >>> python main.py -a (1/2)
+
+# 1 - Run clicker
+# 2 - Creates a session
+```
 
 # Termux manual installation
 ```
@@ -101,10 +110,10 @@ python main.py
 ```
 
 You can also use arguments for quick start, for example:
-```shell
-~/moonbix-bot >>> python main.py --action (1/2)
+```termux
+~/moonbix-bot > python main.py --action (1/2)
 # Or
-~/moonbix-bot >>> python main.py -a (1/2)
+~/moonbix-bot > python main.py -a (1/2)
 
 # 1 - Run clicker
 # 2 - Creates a session
