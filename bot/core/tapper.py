@@ -1,7 +1,7 @@
 import asyncio
-import binascii
 import json
 import traceback
+from itertools import cycle
 from time import time
 from urllib.parse import unquote
 from Crypto.Cipher import AES
@@ -673,9 +673,11 @@ class Tapper:
                 if settings.AUTO_PLAY_GAME:
                     await self.play_game(session)
 
-                sleep_ = randint(2500, 3600)
-                logger.info(f"{self.session_name} | Sleep {sleep_}s...")
-                await asyncio.sleep(sleep_)
+                logger.info(f"<light-blue>==Completed {self.session_name}==</light-blue>")
+                session.close()
+                await http_client.close()
+                # session.close()
+                break
 
             except InvalidSession as error:
                 raise error
@@ -686,11 +688,20 @@ class Tapper:
                 await asyncio.sleep(delay=randint(60, 120))
 
 
-async def run_tapper(tg_client: Client, proxy: str | None):
-    try:
-        sleep_ = randint(1, 15)
-        logger.info(f"{tg_client.name} | start after {sleep_}s")
+async def run_tapper_no_thread(tg_clients, proxies):
+    proxies_cycle = cycle(proxies) if proxies else None
+    while True:
+        for tg_client in tg_clients:
+            try:
+                await Tapper(tg_client=tg_client).run(next(proxies_cycle) if proxies_cycle else None)
+            except InvalidSession:
+                logger.error(f"{tg_client.name} | Invalid Session")
+
+            sleep_ = randint(settings.DELAY_EACH_ACCOUNT[0], settings.DELAY_EACH_ACCOUNT[1])
+            logger.info(f"Sleep {sleep_}s...")
+            await asyncio.sleep(sleep_)
+
+        sleep_ = randint(1500, 2500)
+        logger.info(f"<red>Sleep {sleep_}s...</red>")
         await asyncio.sleep(sleep_)
-        await Tapper(tg_client=tg_client).run(proxy=proxy)
-    except InvalidSession:
-        logger.error(f"{tg_client.name} | Invalid Session")
+
