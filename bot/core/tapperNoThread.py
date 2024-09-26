@@ -697,6 +697,10 @@ async def run_tapper_no_thread(tg_clients, proxies):
                 await Tapper(tg_client=tg_client).run(next(proxies_cycle) if proxies_cycle else None)
             except InvalidSession:
                 logger.error(f"{tg_client.name} | Invalid Session")
+                
+            sleep_ = randint(settings.DELAY_EACH_ACCOUNT[0], settings.DELAY_EACH_ACCOUNT[1])
+            logger.info(f"Sleep {sleep_}s...")
+            await asyncio.sleep(sleep_)
 
         sleep_ = randint(1500, 2500)
         logger.info(f"<red>Sleep {sleep_}s...</red>")
