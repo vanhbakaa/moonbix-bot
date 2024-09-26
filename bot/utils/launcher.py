@@ -18,7 +18,7 @@ from bot.core.registrator import register_sessions
 
 import importlib.util
 
-curr_version = "2.5.0"
+curr_version = "2.5.1"
 
 version = requests.get("https://raw.githubusercontent.com/vanhbakaa/moonbix-bot/refs/heads/main/version")
 version_ = version.text.strip()
