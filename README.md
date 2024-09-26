@@ -90,6 +90,16 @@ copy .env-example .env
 python main.py
 ```
 
+# Termux manual installation
+```
+> pkg update && pkg upgrade -y
+> pkg install python rust git -y
+> git clone https://github.com/vanhbakaa/moonbix-bot.git
+> cd moonbix-bot
+> pip install -r requirements.txt
+> python main.py
+```
+
 You can also use arguments for quick start, for example:
 ```shell
 ~/moonbix-bot >>> python main.py --action (1/2)
