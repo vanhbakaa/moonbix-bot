@@ -116,7 +116,7 @@ You can also use arguments for quick start, for example:
 ~/moonbix-bot > python main.py -a (1/2)
 
 # 1 - Run clicker
-# 2 - Creates a session
+# 2 - Creates a session 
 ```
 # Support This Project
 
