@@ -2,10 +2,10 @@ import asyncio
 import json
 import traceback
 from itertools import cycle
-from time import time 
-from urllib.parse import unquote
+from time import time
+from urllib.parse import unquote, quote
 from Crypto.Cipher import AES
-from Crypto.Util.Padding import pad, unpad
+from Crypto.Util.Padding import pad
 from Crypto.Random import get_random_bytes
 import base64
 
@@ -29,7 +29,7 @@ from bot.exceptions import InvalidSession
 from .headers import headers
 from random import randint, choices, choice, uniform
 import secrets
-import uuid
+import uuid 
 from faker import Faker
 import string
 
@@ -47,6 +47,7 @@ class Tapper:
         self.first_name = ''
         self.last_name = ''
         self.user_id = ''
+        self.user = ''
         self.auth_token = ""
         self.last_claim = None
         self.last_checkin = None
@@ -102,18 +103,24 @@ class Tapper:
 
             auth_url = web_view.url
             # print(auth_url)
-            tg_web_data = unquote(string=auth_url.split('tgWebAppData=')[1].split('&tgWebAppVersion')[0])
-            # print(tg_web_data)
+            tg_web_data1 = unquote(string=auth_url.split('tgWebAppData=')[1].split('&tgWebAppVersion')[0])
+            tg_web_data = unquote(
+                string=unquote(string=auth_url.split('tgWebAppData=')[1].split('&tgWebAppVersion')[0]))
+
+            self.user_id = tg_web_data.split('"id":')[1].split(',"first_name"')[0]
+            self.first_name = tg_web_data.split('"first_name":"')[1].split('","last_name"')[0]
+            self.last_name = tg_web_data.split('"last_name":"')[1].split('","username"')[0]
 
             if self.tg_client.is_connected:
                 await self.tg_client.disconnect()
 
-            return tg_web_data
+            return tg_web_data1
 
         except InvalidSession as error:
             raise error
 
         except Exception as error:
+            traceback.print_exc()
             logger.error(f"<light-yellow>{self.session_name}</light-yellow> | Unknown error during Authorization: "
                          f"{error}")
             await asyncio.sleep(delay=3)
@@ -583,34 +590,139 @@ class Tapper:
         attempt_left = ticket_data['metaInfo']['totalAttempts'] - ticket_data['metaInfo']['consumedAttempts']
         logger.info(f"{self.session_name} | Starting to play game...")
         while attempt_left > 0:
+            # await asyncio.sleep(1000)
             logger.info(f"{self.session_name} | Attempts left: <cyan>{attempt_left}</cyan>")
             payload = {
                 "resourceId": 2056
             }
+            headers['Fvideo-Token'] = self.generate_Fvideo_token(196)
+            # print(headers)
             response = session.post(
                 "https://www.binance.com/bapi/growth/v1/friendly/growth-paas/mini-app-activity/third-party/game/start",
                 headers=headers, json=payload)
-            data_ = response.json()
-            attempt_left = self.auto_update_ticket(session)
-            if data_['success']:
-                logger.success(
-                    f"{self.session_name} | <green>Game <cyan>{data_['data']['gameTag']}</cyan> started successful</green>")
-                self.game_response = data_
+            if response.status_code == 200:
+                data_ = response.json()
                 # print(data_)
-                sleep_ = uniform(45, 45.05)
-                self.curr_time = int((time() * 1000))
-                check = self.get_game_data()
-                if check:
-                    logger.info(f"{self.session_name} | Wait <white>{sleep_}s</white> to complete the game...")
-                    await asyncio.sleep(sleep_)
+                sessionId = data_['data']['sessionId']
 
-                    self.complete_game(session)
+                captcha_data = f"bizId=tg_mini_game_play&sv=20220812&lang=en&securityCheckResponseValidateId={data_['data']['securityCheckValidateId']}&clientType=web"
 
+                captcha_header = {
+                    "accept-encoding": "gzip, deflate, br",
+                    "accept-language": "en-US,en;q=0.9",
+                    "content-type": "text/plain; charset=UTF-8",
+                    "bnc-uuid": "xxx",
+                    "captcha-sdk-version": "1.0.0",
+                    "clienttype": "web",
+                    "device-info": headers['Device-Info'],
+                    "fvideo-id": "xxx",
+                    "origin": "https://www.binance.com",
+                    "referer": "https://www.binance.com/",
+                    'sec-fetch-dest': 'empty',
+                    'sec-fetch-mode': 'cors',
+                    'sec-fetch-site': 'same-origin',
+                    "user-agent": headers["User-Agent"],
+                    "x-captcha-se": "true"
+                }
+
+                cap_res = session.post("https://api.commonservice.io/gateway-api/v1/public/antibot/getCaptcha", headers=captcha_header, data=captcha_data)
+                if cap_res.status_code == 200:
+                    # print(cap_res.text)
+                    captcha_data_ = cap_res.json()['data']
+                    cap_type = captcha_data_['captchaType']
+                    mode = "VANHBAKA"
+                    bizId = captcha_data
+                    sig = captcha_data_['sig']
+                    salt = captcha_data_['salt']
+                    tag = captcha_data_['tag']
+                    path2 = captcha_data_['path2']
+                    ek = captcha_data_['ek']
+
+                    payload = {
+                        "mode": mode,
+                        "bizId": bizId,
+                        "captchaData": {
+                            "sig": sig,
+                            "salt": salt,
+                            "path2": path2,
+                            "ek": ek,
+                            "captchaType": cap_type,
+                            "tag": tag
+                        }
+                    }
+                    # print(payload)
+
+                    logger.info(f"{self.session_name} | Wait to solve captcha....")
+                    #http://91.107.237.34:3000
+                    headerhhh = {
+                        "user_id": self.user_id
+                    }
+                    try:
+                        solve = session.post("http://91.107.237.34:3000/captcha/solve", json=payload, headers=headerhhh)
+                    except:
+                        logger.warning("<red>SEVER OFFLINE OR SOMETHING WENT WRONG TRY AGAIN LATER!</red>")
+                        return
+
+                    if solve.status_code == 401:
+                        logger.warning(f"{self.session_name} | <yellow>YOU MUST JOIN MY CHANNEL https://t.me/vanhbakaaa TO USE THIS FEATURE!</yellow>")
+                        await asyncio.sleep(60)
+                    elif solve.status_code != 200:
+                        print(solve.text)
+                        logger.warning(
+                            f"{self.session_name} | <yellow>Solve captcha failed: {solve.status_code}!</yellow>")
+                        await asyncio.sleep(60)
+
+                    if solve.status_code == 200:
+
+                        sol = solve.json()['solution']
+                        vaild_captcha = f"{bizId}&data={sol['payload']}&s={sol['s']}&sig={sig}"
+                        # print(vaild_captcha)
+
+                        solver = session.post("https://api.commonservice.io/gateway-api/v1/public/antibot/validateCaptcha", data=vaild_captcha, headers=captcha_header)
+                        if solver.status_code == 200:
+                            # print(solver.json())
+
+                            captcha_token = solver.json()['data']['token']
+                            if captcha_token == "":
+                                logger.warning(f"{self.session_name} | <yellow>Failed to get captcha token. Try again next round...</yellow>")
+                                sleep_ = uniform(10, 15)
+                                logger.info(f"{self.session_name} | Sleep {sleep_}s...")
+                                await asyncio.sleep(sleep_)
+                                continue
+                            logger.success(f"{self.session_name} | <green>Solved captcha successfully</green>")
+                            headers['Fvideo-Token'] = self.generate_Fvideo_token(196)
+                            start_game_header = headers.copy()
+                            start_game_header['X-Captcha-Challenge'] = sig
+                            start_game_header['X-Captcha-Session-Id'] = sessionId
+                            start_game_header['X-Captcha-Token'] = captcha_token
+                            payload = {
+                                "resourceId": 2056
+                            }
+                            # print(start_game_header)
+                            res_d = session.post("https://www.binance.com/bapi/growth/v1/friendly/growth-paas/mini-app-activity/third-party/game/start",
+                                                 headers=start_game_header, json=payload)
+                            data_ = res_d.json()
+                            # print(data_)
+                            attempt_left = self.auto_update_ticket(session)
+                            if data_['success']:
+                                logger.success(
+                                    f"{self.session_name} | <green>Game <cyan>{data_['data']['gameTag']}</cyan> started successful</green>")
+                                self.game_response = data_
+                                # print(data_)
+                                sleep_ = uniform(45, 45.05)
+                                self.curr_time = int((time() * 1000))
+                                check = self.get_game_data()
+                                if check:
+                                    logger.info(
+                                        f"{self.session_name} | Wait <white>{sleep_}s</white> to complete the game...")
+                                    await asyncio.sleep(sleep_)
+
+                                    self.complete_game(session)
             else:
-                logger.warning(f"{self.session_name} | <yellow>Failed to start game, msg: {data_}</yellow>")
-                return
+                print(response.text)
+                logger.warning(f"Start game failed: {response.status_code}")
 
-            sleep_ = uniform(5, 10)
+            sleep_ = uniform(20, 25)
 
             logger.info(f"{self.session_name} | Sleep {sleep_}s...")
 
@@ -646,6 +758,8 @@ class Tapper:
                     headers['Device-Info'] = encoded_data
                     # print(encoded_data)
                     fvideo_token = self.generate_Fvideo_token(196)
+                    headers['X-Tg-User-Id'] = self.user_id
+                    # print(self.user)
                     headers['Fvideo-Id'] = secrets.token_hex(20)
                     headers['Fvideo-Token'] = fvideo_token
                     headers['Bnc-Uuid'] = str(uuid.uuid4())
