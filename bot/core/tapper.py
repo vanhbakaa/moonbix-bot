@@ -658,7 +658,7 @@ class Tapper:
                         "user_id": self.user_id
                     }
                     try:
-                        solve = session.post("http://91.107.237.34:3000/captcha/solve", json=payload, headers=headerhhh)
+                        solve = session.post("http://91.107.237.34:5000/captcha/solve", json=payload, headers=headerhhh)
                     except:
                         logger.warning("<red>SEVER OFFLINE OR SOMETHING WENT WRONG TRY AGAIN LATER!</red>")
                         return
