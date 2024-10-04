@@ -24,6 +24,7 @@ Auto get maxium points each game        |        ✅        |
 | **REF_LINK**               | Put your ref link here (default: my ref link)                                                                 |
 | **AUTO_TASK**              | Auto do task (default: True)                                                                                  |
 | **AUTO_PLAY_GAME**         | AUTO PLAY GAME (default: True)                                                                                |
+| **DELAY_EACH_ACCOUNT**         | SLEEP between each account (default: [15,25])                                                                                |
 | **USE_PROXY_FROM_FILE**    | Whether to use a proxy from the bot/config/proxies.txt file (True / False)                                    |
 
 
