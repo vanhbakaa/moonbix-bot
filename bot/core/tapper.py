@@ -602,7 +602,7 @@ class Tapper:
                 headers=headers, json=payload)
             if response.status_code == 200:
                 data_ = response.json()
-                # print(data_)
+                print(data_)
                 sessionId = data_['data']['sessionId']
 
                 captcha_data = f"bizId=tg_mini_game_play&sv=20220812&lang=en&securityCheckResponseValidateId={data_['data']['securityCheckValidateId']}&clientType=web"
