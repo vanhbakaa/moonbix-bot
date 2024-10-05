@@ -122,8 +122,8 @@ async def process() -> None:
 
             if not action.isdigit():
                 logger.warning("Action must be number")
-            elif action not in ["1", "2", "3"]:
-                logger.warning("Action must be 1, 2, or 3")
+            elif action not in ["1", "2", "3", "4"]:
+                logger.warning("Action must be 1, 2, 3 or 4")
             else:
                 action = int(action)
                 break

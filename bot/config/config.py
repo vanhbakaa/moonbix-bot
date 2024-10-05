@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     AUTO_PLAY_GAME: bool = True
     DELAY_EACH_ACCOUNT: list[int] = [60, 120]
 
+    MORE_ACCURATE_CAPTCHA_SOLVER: bool = False
+
     USE_PROXY_FROM_FILE: bool = False
 
 
