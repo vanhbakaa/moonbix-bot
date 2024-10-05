@@ -5,7 +5,7 @@
 > [!WARNING]
 > I am not responsible for your account. Please consider the potential risks before using this bot.
 
-# 🔥🔥 Use PYTHON 3.10 - 3.11.5 🔥🔥
+# 🔥🔥 MUST USE PYTHON 3.11.5 🔥🔥
 
 ## Features  
 | Feature                                                     | Supported  |
@@ -34,7 +34,7 @@ To install libraries and run bot - open run.bat on Windows
 
 ## Prerequisites
 Before you begin, make sure you have the following installed:
-- [Python](https://www.python.org/downloads/) **version 3.10 - 3.11.5**
+- [Python](https://www.python.org/downloads/) **version 3.11.5**
 
 ## Obtaining API Keys
 1. Go to my.telegram.org and log in using your phone number.
