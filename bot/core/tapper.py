@@ -714,6 +714,11 @@ class Tapper:
                                     "https://www.binance.com/bapi/growth/v1/friendly/growth-paas/mini-app-activity/third-party/game/start",
                                     headers=start_game_header, json=payload)
                                 data_ = res_d.json()
+                            else:
+                                print(solver.text)
+
+
+                            
                             # print(data_)
                 attempt_left = self.auto_update_ticket(session)
                 if data_['success']:
