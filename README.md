@@ -5,7 +5,7 @@
 > [!WARNING]
 > I am not responsible for your account. Please consider the potential risks before using this bot.
 
-# 🔥🔥 MUST USE PYTHON 3.11.5 🔥🔥
+# 🔥🔥 MUST USE PYTHON 3.11.5 (CAPTCHA VERSION NOT WORK ON TERMUX)🔥🔥
 
 ## Features  
 | Feature                                                     | Supported  |
@@ -15,6 +15,7 @@
 | Auto ref                                                      |        ✅        |
 | Auto checkin                                                  |        ✅        |
 | Auto play game                                                |        ✅        |
+| Auto solve captcha                                             |        ✅        |
 | Support for pyrogram .session                                 |        ✅        |
 Auto get maxium points each game        |        ✅        |
 ## [Settings](https://github.com/vanhbakaa/moonbix-bot/blob/main/.env-example)
@@ -24,6 +25,7 @@ Auto get maxium points each game        |        ✅        |
 | **REF_LINK**               | Put your ref link here (default: my ref link)                                                                 |
 | **AUTO_TASK**              | Auto do task (default: True)                                                                                  |
 | **AUTO_PLAY_GAME**         | AUTO PLAY GAME (default: True)                                                                                |
+| **MORE_ACCURATE_CAPTCHA_SOLVER**         | Option to use more accurate solver (it will slower) (default: False)                                                                                |
 | **DELAY_EACH_ACCOUNT**         | SLEEP between each account (default: [15,25])                                                                                |
 | **USE_PROXY_FROM_FILE**    | Whether to use a proxy from the bot/config/proxies.txt file (True / False)                                    |
 
