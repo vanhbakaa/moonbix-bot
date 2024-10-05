@@ -1,5 +1,6 @@
 import asyncio
 import json
+import random
 import traceback
 from itertools import cycle
 from time import time
@@ -29,16 +30,19 @@ from bot.exceptions import InvalidSession
 from .headers import headers
 from random import randint, choices, choice, uniform
 import secrets
-import uuid 
+import uuid
 from faker import Faker
 import string
+
 
 fake = Faker()
 min_length = 256
 max_length = 1024
 
+
 def base64_encode(data):
     return base64.b64encode(data).decode('utf-8')
+
 
 class Tapper:
     def __init__(self, tg_client: Client):
@@ -203,7 +207,7 @@ class Tapper:
 
     async def check_proxy(self, http_client: aiohttp.ClientSession, proxy: Proxy):
         try:
-            response = await http_client.get(url='https://httpbin.org/ip', timeout=aiohttp.ClientTimeout(5))
+            response = await http_client.get(url='https://httpbin.org/ip', timeout=aiohttp.ClientTimeout(5), ssl=False)
             ip = (await response.json()).get('origin')
             logger.info(f"{self.session_name} | Proxy IP: {ip}")
             return True
@@ -241,9 +245,9 @@ class Tapper:
             hook_hit_x = "{:.3f}".format(round(uniform(100, 400), 3))
             hook_hit_y = "{:.3f}".format(pos_y)
 
-            multi = (float(hook_hit_x) - float(hook_pos_x))*(float(hook_hit_x) - float(hook_pos_x))
+            multi = (float(hook_hit_x) - float(hook_pos_x)) * (float(hook_hit_x) - float(hook_pos_x))
             mult2i = (float(hook_hit_y) - float(hook_pos_y)) * (float(hook_hit_y) - float(hook_pos_y))
-            cal_angle = (float(hook_pos_x) - float(hook_hit_x))/(sqrt(multi + mult2i))
+            cal_angle = (float(hook_pos_x) - float(hook_hit_x)) / (sqrt(multi + mult2i))
             hook_shot_angle = "{:.3f}".format(cal_angle)
 
             item_type = 1
@@ -251,14 +255,14 @@ class Tapper:
             point = randint(1, 200)
 
         elif type == 2:
-            pick_time = self.curr_time+ self.rs
+            pick_time = self.curr_time + self.rs
             if pick_time >= end_time:
                 pick_time = end_time - 1000
                 return None
 
             hook_pos_x = "{:.3f}".format(round(uniform(75, 230), 3))
             hook_pos_y = "{:.3f}".format(round(uniform(199, 230), 3))
-           #  hook_shot_angle = "{:.3f}".format(round(uniform(-1, 1), 3))
+            #  hook_shot_angle = "{:.3f}".format(round(uniform(-1, 1), 3))
             hook_hit_x = "{:.3f}".format(round(uniform(100, 400), 3))
             hook_hit_y = "{:.3f}".format(pos_y)
             multi = (float(hook_hit_x) - float(hook_pos_x)) * (float(hook_hit_x) - float(hook_pos_x))
@@ -342,7 +346,6 @@ class Tapper:
                         else:
                             obj_type['trap'].update({abs(int(reward)): f"{obj['size']},{obj['quantity']}"})
 
-
             limit = min(total_obj, random_pick_time)
             random_pick_sth_times = randint(1, limit)
             picked_bonus = False
@@ -358,7 +361,7 @@ class Tapper:
 
             sorted_pos_y = sorted(pos_y)
             for i in range(1, len(sorted_pos_y)):
-                if sorted_pos_y[i] - sorted_pos_y[i-1] < 40:
+                if sorted_pos_y[i] - sorted_pos_y[i - 1] < 40:
                     sorted_pos_y[i] += randint(40, 55)
 
             Total_tap = 0
@@ -374,10 +377,10 @@ class Tapper:
                         item_size = obj_type['trap'][reward_d].split(',')[0]
                         if int(quantity) > 0:
                             data_ = self.random_data_type(end_time=end_time,
-                                                                        type=0,
-                                                                        item_size=int(item_size),
-                                                                        item_pts=0,
-                                                                        pos_y=sorted_pos_y[Total_tap])
+                                                          type=0,
+                                                          item_size=int(item_size),
+                                                          item_pts=0,
+                                                          pos_y=sorted_pos_y[Total_tap])
                             if data_ is not None:
                                 Total_tap += 1
                                 score = max(0, score - int(reward_d))
@@ -398,10 +401,10 @@ class Tapper:
                         if int(quantity) > 0:
 
                             data_ = self.random_data_type(end_time=end_time,
-                                                                           type=1,
-                                                                           item_size=item_size,
-                                                                           item_pts=0,
-                                                                           pos_y=sorted_pos_y[Total_tap])
+                                                          type=1,
+                                                          item_size=item_size,
+                                                          item_pts=0,
+                                                          pos_y=sorted_pos_y[Total_tap])
                             if data_ is not None:
                                 Total_tap += 1
                                 score += int(reward_d)
@@ -417,10 +420,10 @@ class Tapper:
                     size = obj_type['bonus'].split(',')[1]
                     pts = obj_type['bonus'].split(',')[0]
                     data_ = self.random_data_type(end_time=end_time,
-                                          type=2,
-                                          item_size=size,
-                                          item_pts=pts,
-                                          pos_y=sorted_pos_y[Total_tap])
+                                                  type=2,
+                                                  item_size=size,
+                                                  item_pts=pts,
+                                                  pos_y=sorted_pos_y[Total_tap])
                     if data_ is not None:
                         Total_tap += 1
                         picked_bonus = True
@@ -576,7 +579,8 @@ class Tapper:
             logger.success(
                 f"{self.session_name} | <green>Sucessfully earned: <yellow>{self.game['log']}</yellow> from game !</green>")
         else:
-            logger.warning(f"{self.session_name} | <yellow>Failed to complete game | {self.game['log']}: {data_}</yellow>")
+            logger.warning(
+                f"{self.session_name} | <yellow>Failed to complete game | {self.game['log']}: {data_}</yellow>")
 
     def auto_update_ticket(self, session: cloudscraper.CloudScraper):
         ticket_data = self.get_user_info1(session)
@@ -602,46 +606,46 @@ class Tapper:
                 headers=headers, json=payload)
             if response.status_code == 200:
                 data_ = response.json()
-                print(data_)
-                sessionId = data_['data']['sessionId']
+                # print(data_)
+                if 'sessionId' in data_['data']:
+                    # print("ok")
+                    sessionId = data_['data']['sessionId']
 
-                captcha_data = f"bizId=tg_mini_game_play&sv=20220812&lang=en&securityCheckResponseValidateId={data_['data']['securityCheckValidateId']}&clientType=web"
+                    captcha_data = f"bizId=tg_mini_game_play&sv=20220812&lang=en&securityCheckResponseValidateId={data_['data']['securityCheckValidateId']}&clientType=web"
 
-                captcha_header = {
-                    "accept-encoding": "gzip, deflate, br",
-                    "accept-language": "en-US,en;q=0.9",
-                    "content-type": "text/plain; charset=UTF-8",
-                    "bnc-uuid": "xxx",
-                    "captcha-sdk-version": "1.0.0",
-                    "clienttype": "web",
-                    "device-info": headers['Device-Info'],
-                    "fvideo-id": "xxx",
-                    "origin": "https://www.binance.com",
-                    "referer": "https://www.binance.com/",
-                    'sec-fetch-dest': 'empty',
-                    'sec-fetch-mode': 'cors',
-                    'sec-fetch-site': 'same-origin',
-                    "user-agent": headers["User-Agent"],
-                    "x-captcha-se": "true"
-                }
+                    captcha_header = {
+                        "accept-encoding": "gzip, deflate, br",
+                        "accept-language": "en-US,en;q=0.9",
+                        "content-type": "text/plain; charset=UTF-8",
+                        "bnc-uuid": "xxx",
+                        "captcha-sdk-version": "1.0.0",
+                        "clienttype": "web",
+                        "device-info": headers['Device-Info'],
+                        "fvideo-id": "xxx",
+                        "origin": "https://www.binance.com",
+                        "referer": "https://www.binance.com/",
+                        'sec-fetch-dest': 'empty',
+                        'sec-fetch-mode': 'cors',
+                        'sec-fetch-site': 'same-origin',
+                        "user-agent": headers["User-Agent"],
+                        "x-captcha-se": "true"
+                    }
 
-                cap_res = session.post("https://api.commonservice.io/gateway-api/v1/public/antibot/getCaptcha", headers=captcha_header, data=captcha_data)
-                if cap_res.status_code == 200:
-                    # print(cap_res.text)
-                    captcha_data_ = cap_res.json()['data']
-                    cap_type = captcha_data_['captchaType']
-                    mode = "VANHBAKA"
-                    bizId = captcha_data
-                    sig = captcha_data_['sig']
-                    salt = captcha_data_['salt']
-                    tag = captcha_data_['tag']
-                    path2 = captcha_data_['path2']
-                    ek = captcha_data_['ek']
+                    cap_res = session.post("https://api.commonservice.io/gateway-api/v1/public/antibot/getCaptcha",
+                                           headers=captcha_header, data=captcha_data)
+                    if cap_res.status_code == 200:
+                        # print(cap_res.text)
+                        captcha_data_ = cap_res.json()['data']
+                        cap_type = captcha_data_['captchaType']
+                        bizId = captcha_data
+                        sig = captcha_data_['sig']
+                        salt = captcha_data_['salt']
+                        tag = captcha_data_['tag']
+                        path2 = captcha_data_['path2']
+                        ek = captcha_data_['ek']
+                        logger.info(f"{self.session_name} | Attempt to solve captcha ({tag})...")
 
-                    payload = {
-                        "mode": mode,
-                        "bizId": bizId,
-                        "captchaData": {
+                        captcha_data = {
                             "sig": sig,
                             "salt": salt,
                             "path2": path2,
@@ -649,75 +653,83 @@ class Tapper:
                             "captchaType": cap_type,
                             "tag": tag
                         }
-                    }
-                    # print(payload)
 
-                    logger.info(f"{self.session_name} | Wait to solve captcha....")
-                    #http://91.107.237.34:3000
-                    headerhhh = {
-                        "user_id": self.user_id
-                    }
-                    try:
-                        solve = session.post("http://91.107.237.34:5000/captcha/solve", json=payload, headers=headerhhh)
-                    except:
-                        logger.warning("<red>SEVER OFFLINE OR SOMETHING WENT WRONG TRY AGAIN LATER!</red>")
-                        return
+                        # dat = {
+                        #     "mode": "VANHBAKA",
+                        #     "bizId": bizId,
+                        #     "captchaData": {
+                        #             "sig": sig,
+                        #             "salt": salt,
+                        #             "path2": path2,
+                        #             "ek": ek,
+                        #             "captchaType": cap_type,
+                        #             "tag": tag
+                        #     }
+                        # }
+                        # head = {
+                        #     "user_id": self.user_id
+                        # }
+                        #
+                        # solve = session.post("http://127.0.0.1:5000/captcha/solve", json=dat, headers=head)
+                        # solve1 = solve.json()
+                        # print(solve1)
 
-                    if solve.status_code == 401:
-                        logger.warning(f"{self.session_name} | <yellow>YOU MUST JOIN MY CHANNEL https://t.me/vanhbakaaa TO USE THIS FEATURE!</yellow>")
-                        await asyncio.sleep(60)
-                    elif solve.status_code != 200:
-                        print(solve.text)
-                        logger.warning(
-                            f"{self.session_name} | <yellow>Solve captcha failed: {solve.status_code}!</yellow>")
-                        await asyncio.sleep(60)
+                        # print(payload)
+                        from bot.core.solver.captcha_solver import solve_captcha
 
-                    if solve.status_code == 200:
+                        solve = await solve_captcha(bizId, captcha_data)
+                        # print(solve)
+                        await asyncio.sleep(random.uniform(2,4))
+                        if solve['ok']:
+                            sol = solve['solution']
+                            # print(sol)
+                            vaild_captcha = f"{bizId}&data={sol['payload']}&s={sol['s']}&sig={sig}"
+                            # print(vaild_captcha)
 
-                        sol = solve.json()['solution']
-                        vaild_captcha = f"{bizId}&data={sol['payload']}&s={sol['s']}&sig={sig}"
-                        # print(vaild_captcha)
+                            solver = session.post(
+                                "https://api.commonservice.io/gateway-api/v1/public/antibot/validateCaptcha",
+                                data=vaild_captcha, headers=captcha_header)
+                            if solver.status_code == 200:
+                                # print(solver.json())
 
-                        solver = session.post("https://api.commonservice.io/gateway-api/v1/public/antibot/validateCaptcha", data=vaild_captcha, headers=captcha_header)
-                        if solver.status_code == 200:
-                            # print(solver.json())
-
-                            captcha_token = solver.json()['data']['token']
-                            if captcha_token == "":
-                                logger.warning(f"{self.session_name} | <yellow>Failed to get captcha token. Try again next round...</yellow>")
-                                sleep_ = uniform(10, 15)
-                                logger.info(f"{self.session_name} | Sleep {sleep_}s...")
-                                await asyncio.sleep(sleep_)
-                                continue
-                            logger.success(f"{self.session_name} | <green>Solved captcha successfully</green>")
-                            headers['Fvideo-Token'] = self.generate_Fvideo_token(196)
-                            start_game_header = headers.copy()
-                            start_game_header['X-Captcha-Challenge'] = sig
-                            start_game_header['X-Captcha-Session-Id'] = sessionId
-                            start_game_header['X-Captcha-Token'] = captcha_token
-                            payload = {
-                                "resourceId": 2056
-                            }
-                            # print(start_game_header)
-                            res_d = session.post("https://www.binance.com/bapi/growth/v1/friendly/growth-paas/mini-app-activity/third-party/game/start",
-                                                 headers=start_game_header, json=payload)
-                            data_ = res_d.json()
-                            # print(data_)
-                            attempt_left = self.auto_update_ticket(session)
-                            if data_['success']:
-                                logger.success(
-                                    f"{self.session_name} | <green>Game <cyan>{data_['data']['gameTag']}</cyan> started successful</green>")
-                                self.game_response = data_
-                                # print(data_)
-                                sleep_ = uniform(45, 45.05)
-                                self.curr_time = int((time() * 1000))
-                                check = self.get_game_data()
-                                if check:
-                                    logger.info(
-                                        f"{self.session_name} | Wait <white>{sleep_}s</white> to complete the game...")
+                                captcha_token = solver.json()['data']['token']
+                                if captcha_token == "":
+                                    logger.warning(
+                                        f"{self.session_name} | <yellow>Failed to solve captcha. Try again next round...</yellow>")
+                                    sleep_ = uniform(10, 15)
+                                    logger.info(f"{self.session_name} | Sleep {sleep_}s...")
                                     await asyncio.sleep(sleep_)
+                                    continue
+                                logger.success(f"{self.session_name} | <green>Solved captcha successfully | Solve time: <cyan>{solve['solveTime']}s</cyan></green>")
+                                headers['Fvideo-Token'] = self.generate_Fvideo_token(196)
+                                start_game_header = headers.copy()
+                                start_game_header['X-Captcha-Challenge'] = sig
+                                start_game_header['X-Captcha-Session-Id'] = sessionId
+                                start_game_header['X-Captcha-Token'] = captcha_token
+                                payload = {
+                                    "resourceId": 2056
+                                }
+                                # print(start_game_header)
+                                res_d = session.post(
+                                    "https://www.binance.com/bapi/growth/v1/friendly/growth-paas/mini-app-activity/third-party/game/start",
+                                    headers=start_game_header, json=payload)
+                                data_ = res_d.json()
+                            # print(data_)
+                attempt_left = self.auto_update_ticket(session)
+                if data_['success']:
+                    logger.success(
+                        f"{self.session_name} | <green>Game <cyan>{data_['data']['gameTag']}</cyan> started successful</green>")
+                    self.game_response = data_
+                    # print(data_)
+                    sleep_ = uniform(45, 45.05)
+                    self.curr_time = int((time() * 1000))
+                    check = self.get_game_data()
+                    if check:
+                        logger.info(
+                            f"{self.session_name} | Wait <white>{sleep_}s</white> to complete the game...")
+                        await asyncio.sleep(sleep_)
 
-                                    self.complete_game(session)
+                        self.complete_game(session)
             else:
                 print(response.text)
                 logger.warning(f"Start game failed: {response.status_code}")
@@ -818,4 +830,3 @@ async def run_tapper_no_thread(tg_clients, proxies):
         sleep_ = randint(1500, 2500)
         logger.info(f"<red>Sleep {sleep_}s...</red>")
         await asyncio.sleep(sleep_)
-

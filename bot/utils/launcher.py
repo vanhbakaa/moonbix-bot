@@ -17,7 +17,7 @@ from bot.core.registrator import register_sessions
 
 import importlib.util
 
-curr_version = "3.0.0"
+curr_version = "2.7.1"
 
 version = requests.get("https://raw.githubusercontent.com/vanhbakaa/moonbix-bot/refs/heads/main/version")
 version_ = version.text.strip()
@@ -122,8 +122,8 @@ async def process() -> None:
 
             if not action.isdigit():
                 logger.warning("Action must be number")
-            elif action not in ["1", "2", "3"]:
-                logger.warning("Action must be 1, 2, or 3")
+            elif action not in ["1", "2", "3", "4"]:
+                logger.warning("Action must be 1, 2, 3 or 4")
             else:
                 action = int(action)
                 break
