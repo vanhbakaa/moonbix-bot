@@ -5,7 +5,7 @@
 > [!WARNING]
 > I am not responsible for your account. Please consider the potential risks before using this bot.
 
-# 🔥🔥 MUST USE PYTHON 3.11.5 (CAPTCHA VERSION NOT WORK ON TERMUX)🔥🔥
+# 🔥🔥 MUST USE PYTHON 3.11.5 (CAPTCHA VERSION ISN'T WORK ON TERMUX)🔥🔥
 
 ## Features  
 | Feature                                                     | Supported  |
