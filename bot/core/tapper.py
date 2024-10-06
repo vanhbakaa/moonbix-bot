@@ -327,7 +327,7 @@ class Tapper:
         try:
             end_time = int((time() + 45) * 1000)
             # print(end_time)
-            random_pick_time = randint(3, 15)
+            random_pick_time = randint(8, 15)
             total_obj = 0
             key_for_game = self.game_response['data']['gameTag']
             obj_type = {
@@ -714,11 +714,6 @@ class Tapper:
                                     "https://www.binance.com/bapi/growth/v1/friendly/growth-paas/mini-app-activity/third-party/game/start",
                                     headers=start_game_header, json=payload)
                                 data_ = res_d.json()
-                            else:
-                                print(solver.text)
-
-
-                            
                             # print(data_)
                 attempt_left = self.auto_update_ticket(session)
                 if data_['success']:
