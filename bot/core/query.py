@@ -695,7 +695,7 @@ class Tapper:
         while True:
             try:
                 if time() - access_token_created_time >= token_live_time:
-                    tg_web_data = await self.get_tg_web_data(proxy=proxy)
+                    tg_web_data = self.query
                     self.auth_token = tg_web_data
                     data = self.generate_random_data(headers['User-Agent'])
                     json_data = json.dumps(data)
