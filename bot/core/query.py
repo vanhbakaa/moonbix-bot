@@ -50,7 +50,9 @@ class Tapper:
         self.session_name = accname
         self.first_name = ''
         self.last_name = ''
-        self.user_id = ''
+        temp_query = unquote(query)
+        self.user_id = temp_query.split('"id":')[1].split(',"first_name"')[0]
+        # print(self.user_id)
         self.user = ''
         self.auth_token = ""
         self.last_claim = None
